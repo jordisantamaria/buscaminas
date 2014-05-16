@@ -10,8 +10,13 @@ public:
 	~CTablero(void);
 
 	void draw();
+	void moviment();
+	void destaparCasella(int x, int y);
 
 private:
+
+	void demanarCoordenadaX(int &x);
+	void demanarCoordenadaY(int &y);
 	int width;
 	int height;
 	int minas;
