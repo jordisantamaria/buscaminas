@@ -32,12 +32,19 @@ CTablero::CTablero(int width, int height, int minas)
 
 void CTablero::draw()
 {
+	char c = 178;
 	int i = 0;
 	int j = 0;
 
 	while(i<height)
 {
-	cout << casella[i][j].getNumMinasProperas();
+	if(casella[i][j].getDestapat() == false)
+	{
+	cout << c;//casella[i][j].getNumMinasProperas();
+	}else
+	{
+		cout <<casella[i][j].getNumMinasProperas();
+	}
 	j++;
 	if(j==width-1)
 	{
@@ -46,6 +53,40 @@ void CTablero::draw()
 		cout <<endl;
 	}
 }
+}
+
+void CTablero::moviment()
+{
+	int x, y;
+	demanarCoordenadaX(x);
+	demanarCoordenadaY(y);
+	destaparCasella(x,y);
+}
+
+void CTablero::destaparCasella(int x, int y)
+{
+	casella[x-1][y-1].setDestapat(true);
+	cout << "La casella" <<x << y << "destapat = " << casella[x][y].getDestapat() <<endl;
+}
+void CTablero::demanarCoordenadaX(int &x)
+{
+	cout << "Indica la coordenada X" <<endl;
+	cin >>x;
+	if(x < 0 || x>=width)
+	{
+		cout << "Coordenada x Incorrecte" <<endl;
+		demanarCoordenadaX(x);
+	}
+}
+void CTablero::demanarCoordenadaY(int &y)
+{
+	cout << "Indica la coordenada Y" <<endl;
+	cin >>y;
+	if(y < 0 || y>=height)
+	{
+		cout << "Coordenada Y Incorrecte" <<endl;
+		demanarCoordenadaY(y);
+	}
 }
 CTablero::~CTablero(void)
 {
