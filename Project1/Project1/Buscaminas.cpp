@@ -63,11 +63,13 @@ int dificultat = -1;
 CTablero tabler;
 system("CLS");
 menu(state,dificultat );
-if(state != SALIR)
-{
 tabler = CTablero(9,9,10);
+do
+{
+
 tabler.draw();
-}
+tabler.moviment();
+}while((state != SALIR));
 
 
 
