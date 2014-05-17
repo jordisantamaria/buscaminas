@@ -42,7 +42,7 @@ void CTablero::inicialitzarMinas()
 		randomY = numAleatori(height-1);
 		if(casella[randomX][randomY].getNumMinasProperas() == 0)
 		{
-		casella[randomX][randomY].setnumMinasProperas(9);
+		casella[randomX][randomY].setnumMinasProperas(MINA);
 		numMinas++;
 		}
 	}
@@ -92,7 +92,7 @@ void CTablero::setNumMinasProperas(int x, int y)
 	while(i<=x+1)
 	{
 		
-			if(casella[i][j].getNumMinasProperas() == 9)
+			if(casella[i][j].getNumMinasProperas() == MINA)
 			{
 				numMinasAdjacents++;
 			}
@@ -134,7 +134,7 @@ int CTablero::destaparCasella(int x, int y)
 	int posY = y-1;
 
 	// SI HI HA MINA EN AQUELLA POSICIO, MOSTRA EL TAULER DE NOU I ACABA LA PARTIDA
-	if(casella[posX][posY].getNumMinasProperas() == 9)
+	if(casella[posX][posY].getNumMinasProperas() == MINA)
 	{
 		casella[posX][posY].setDestapat(true);
 		draw();
