@@ -1,12 +1,9 @@
 #include "MenuScreen.h"
 #include "Tablero.h"
+#include <iostream>
 
 
-enum estatsGame{
-	MENU,
-	GAMEPLAY,
-	SALIR
-};
+
 
 void menu(int &estatActual, int &dificultatGame )
 {
@@ -25,51 +22,50 @@ void menu(int &estatActual, int &dificultatGame )
 	{
 	case 1:
 		dificultatGame = 1;
-		estatActual = GAMEPLAY;
+		;
 		cout << "DIFICULTAT 1" <<endl;
 		break;
 	case 2:
 		dificultatGame = 2;
-		estatActual = GAMEPLAY;
+		
 		cout << "DIFICULTAT 2" <<endl;
 		break;
 	case 3:
 		dificultatGame = 3;
-		estatActual = GAMEPLAY;
+		
 		cout << "DIFICULTAT 3" <<endl;
 		break;
 	case 4:
 		estatActual = SALIR;		
 		break;
-	}
-
-
-	
-	if( dificultat<0 && dificultat >4)
-	{
-		cout << "OPCIO INCORRECTE" <<endl;
+	default:
+		dificultatGame = -1;
+		cout << "Dificultat Incorrecte" <<endl;
 		menu(estatActual,dificultatGame );
+		break;
 	}
+
 
 
 }
 int main()
 {
 	int state = MENU;
-
 int dificultat = -1;
 
-//CMenuScreen menu;
+
 CTablero tabler;
-system("CLS");
 menu(state,dificultat );
+
+system("CLS");
 tabler = CTablero(9,9,10);
-do
+
+while(state != SALIR)
 {
 
 tabler.draw();
-tabler.moviment();
-}while((state != SALIR));
+tabler.moviment(state);
+}
 
 
 
