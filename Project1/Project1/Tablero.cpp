@@ -29,6 +29,8 @@ CTablero::CTablero(int width, int height, int minas)
 		}
 	}
 	inicialitzarMinas();
+	inicialitzarnumMinasAdjacents();
+
 }
 
 void CTablero::inicialitzarMinas()
@@ -46,6 +48,67 @@ void CTablero::inicialitzarMinas()
 		numMinas++;
 		}
 	}
+}
+void CTablero::inicialitzarnumMinasAdjacents()
+{
+	int numero;
+
+	for(int i=0; i<width; i++)
+	{
+		for(int j=0; j<height; j++)
+		{
+			if(casella[i][j].getNumMinasProperas() == 0)
+			{
+				numero = setNumMinas(i,j);
+				casella[i][j].setnumMinasProperas(numero);
+			}
+		}
+	}
+}
+
+
+int CTablero::setNumMinas(int x, int y)
+{
+
+	int numMinasAdjacents = 0;
+	int i = min(x-1, 0);
+	int j = min(y-1, 0);
+
+	
+	for(int i = x-1; i < x+2; i++)
+	{
+		for(int j = y-1; j < y+2; j++)
+		{
+			if( i>=0 && i <width && j>=0 && j<height)
+			{
+				if (casella[i][j].getNumMinasProperas() == MINA)
+				{
+					numMinasAdjacents++;
+				}
+			}
+		}
+	}
+
+
+	/*do{
+	
+		
+			if(casella[i][j].getNumMinasProperas() == MINA)
+			{
+				numMinasAdjacents++;
+			}
+			j++;
+			if(j==max(y+1, height-1))
+		{
+			i++;
+			j=y-1;
+		}
+		
+	}while(i<=max(x+1, width-1));*/
+	
+
+	return numMinasAdjacents;
+	//cout << "El numero de minas properas es" << numMinasAdjacents<<endl;
 }
 
 void CTablero::draw()
@@ -81,32 +144,9 @@ void CTablero::moviment(int &state)
 	int x, y;
 	demanarCoordenadaX(x);
 	demanarCoordenadaY(y);
-	state = destaparCasella(x,y);
+	destaparCasella(x-1,y-1, state);
 }
-void CTablero::setNumMinasProperas(int x, int y)
-{
 
-	int numMinasAdjacents = 0;
-	int i = x-1;
-	int j = y-1;
-	while(i<=x+1)
-	{
-		
-			if(casella[i][j].getNumMinasProperas() == MINA)
-			{
-				numMinasAdjacents++;
-			}
-			j++;
-		if(j==y+1)
-		{
-			i++;
-			j=y-1;
-		}
-		
-	}
-	casella[x][y].setnumMinasProperas(numMinasAdjacents);
-	cout << "El numero de minas properas es" << numMinasAdjacents<<endl;
-}
 
 int CTablero::min(int num, int min)
 {
@@ -127,48 +167,52 @@ int CTablero::max(int num, int max)
 	}
 }
 
-
-int CTablero::destaparCasella(int x, int y)
+void CTablero::destaparCasella(int x, int y, int &estat)
 {
-	int posX = x-1;
-	int posY = y-1;
+	
+	int posX = x;
+	int posY = y;
+
+	casella[posX][posY].setDestapat(true);
 
 	// SI HI HA MINA EN AQUELLA POSICIO, MOSTRA EL TAULER DE NOU I ACABA LA PARTIDA
 	if(casella[posX][posY].getNumMinasProperas() == MINA)
 	{
-		casella[posX][posY].setDestapat(true);
 		draw();
 		cout << "Aquesta casella era una bomba, GAME OVER" <<endl;
-		return SALIR;
+		estat = SALIR;
 	}
-
+	
 	// SINO, DESTAPA AQUELLA CASELLA I LI ASIGNA EL NUMERO CORRESPONENT, SI AQUELLA CASELLA NO TE MINAS PROPERAS, CRIDA RECURSIVITAT A LES ADJACENTS.
-	else
+	 
+	else if (casella[posX][posY].getNumMinasProperas() == 0)	
 	{
-	setNumMinasProperas(posX, posY);
 
 	casella[posX][posY].setDestapat(true);
-	cout << "La casella" <<x << y << "destapat = " << casella[x][y].getDestapat() <<endl;
+	cout << "La casella" <<x << y << "destapat = " << casella[posX][posY].getDestapat() <<endl;
 
 	// RECURSIVITAT PER A LES CASELLES VEINES
 
-	if(casella[posX][posY].getNumMinasProperas() ==0)
-	{
-		for(int i = min(posX-1, 0); i <= max(posX+1, width-1); i++)
+	
+		for(int i = min(posX-1, 0); i < max(posX+2, width-1); i++)
 		{
-			for(int j = min(posY-1, 0); j <= max(posY+1, height-1); j++)
+			for(int j = min(posY-1, 0); j < max(posY+2, height-1); j++)
 			{
-				if(casella[posX][posY].getDestapat() == false)
+				if((casella[i][j].getNumMinasProperas() ==0) && (casella[i][j].getDestapat() == false))
 				{
-					destaparCasella(i, j);
+					destaparCasella(i, j, estat);
+				}
+				else{
+					casella[i][j].setDestapat(true);
 				}
 			}
 		}
-	}
+	
+	
 
 
 	}
-	return GAMEPLAY;
+	
 }
 void CTablero::demanarCoordenadaX(int &x)
 {
