@@ -26,9 +26,10 @@ private:
 	int numAleatori (int maxNum);
 	void demanarCoordenadaX(int &x);
 	void demanarCoordenadaY(int &y);
-	int destaparCasella(int x, int y);
-	void setNumMinasProperas(int x, int y);
+	void destaparCasella(int x, int y, int &estat);
+	int setNumMinas(int x, int y);
 	void inicialitzarMinas();
+	void inicialitzarnumMinasAdjacents();
 	int min(int num, int min);
 	int max(int num, int max);
 	
