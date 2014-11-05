@@ -1,5 +1,8 @@
 import random
 
+#falta per arreglar la funcio __demanarBandera i la recursivitat de moviment
+
+
 class Casella(object):
 	__slots__ = ['__nMinasProp', '__destapat', '__interrogant', '__bandera']
 	def __init__(self):
@@ -24,6 +27,8 @@ class Casella(object):
 MINA = 9
 CASELLA_SENSE_DESTAPAR = 178
 WIN = 4
+GAMEPLAY=2
+SALIR = 3
 
 class Tabler(object):
 	
@@ -98,72 +103,103 @@ class Tabler(object):
 		return random.randrange(maxnum)
 
 	def draw(self):
-		c = chr(CASELLA_SENSE_DESTAPAR)
+		c = 'x'
 		i = 0
 		j = 0
 		fila = [0,0,0,0,0,0,0,0,0]
-		"""while j<self.__height:
-			#if self.casellas[i][j].getDestapat() == False:
-			#	print c
-			#else:
-			#print self.casellas[i][j].getnMinasProp()
+		"""if(casella[i][j].getInterrogant() == true)
+			{
+				cout << "?";
+			}
+			else if(casella[i][j].getBandera() == true)
+			{
+				cout << bandera;
+			}else"""
 			
-			fila[i] = self.casellas[i][j].getnMinasProp()
-			print fila
-			i+=1
-			if i==self.__width-1:
-				i=0
-				j+=1
-				print '\n'"""
-		
 		for i in range(self.__width):
 			for j in range(self.__height):
 				fila[j] = self.casellas[i][j].getnMinasProp()
+				if self.casellas[i][j].getDestapat() == False:
+					fila[j]=c
+				if self.casellas[i][j].getInterrogant() ==True:
+					fila[j]='?'
+				if self.casellas[i][j].getBandera() == True:
+					fila[j]='b'
+			
+					
 
 			print fila
-		def demanarMoviment(self, estat):
-			if self.__minasRestants == 0:
-				self.__punts = self.__turn
-				estat = WIN
-				print "Quin moviment vols fer ?" 
-				print "1. Destapar casella"  
-				print "2. Colocar Bandera" 
-				print "3. Posar Interrogant"  
+	def demanarMoviment(self, estat=0):
+		if self.__minasRestants == 0:
+			self.__punts = self.__turn
+			estat = WIN
+		else:
+			print "Quin moviment vols fer ?" 
+			print "1. Destapar casella"  
+			print "2. Colocar Bandera" 
+			print "3. Posar Interrogant"  
 
-				opcio = raw_input()
+			opcio = int(raw_input())
 
-				if opcio == 1:
-					self.__moviment()
-				elif opcio == 2:
-					self.__demanarBandera()
-				elif opcio == 3:
-					self.__demanarInterrogant()
-				else:
-					self.demanarMoviment(estat)
-		def __demanarInterrogant(self):
+			if opcio == 1:
+				self.__moviment()
+			elif opcio == 2:
+				self.__demanarBandera()
+			elif opcio == 3:
+				self.__demanarInterrogant()
+			else:
+				self.demanarMoviment(estat)
+	def __demanarInterrogant(self):
+		x = self.__demanarCoordenadaX()
+		y = self.__demanarCoordenadaY()
+		self.casellas[x-1][y-1].setInterrogant(True)
+		print "La CASELLA " + str(x) + str(y) + "te interrogant"
+	def __demanarBandera(self):
+		x = self.__demanarCoordenadaX()
+		y = self.__demanarCoordenadaY()
+		if self.casellas[x-1][y-1].getnMinasProp()==MINA and casellas[x-1][y-1].getBandera() == False:
+			self.casellas[x-1][y-1].setBandera(True)
+			minasRestants-=1
+			print "minas restants" + str(minasRestants)
+	def __moviment(self,estat=0):
+		x = self.__demanarCoordenadaX()
+		y = self.__demanarCoordenadaY()
+		estat = self.__destaparCasella(x-1,y-1)
+	def __destaparCasella(self,x,y):
+		posX = x
+		posY = y
+		self.casellas[posX][posY].setDestapat(True)
+	# SI HI HA MINA EN AQUELLA POSICIO, MOSTRA EL TAULER DE NOU I ACABA LA PARTIDA
+		if self.casellas[posX][posY].getnMinasProp() == MINA:
+			self.draw()
+			print "Aquesta casella era una bomba, GAME OVER \n"
+			return SALIR
+	#SINO, DESTAPA AQUELLA CASELLA I LI ASIGNA EL NUMERO CORRESPONENT, SI AQUELLA CASELLA NO TE MINAS PROPERAS, CRIDA RECURSIVITAT A LES ADJACENTS. 
+		elif self.casellas[posX][posY].getnMinasProp() == 0:
+			self.casellas[posX][posY].setDestapat(True)
+			#print "La casella" + str(x) + str(y) +"destapat = " + self.casellas[posX][posY].getDestapat() + "\n"
+			# RECURSIVITAT PER A LES CASELLES VEINES
+			"""for i in range(min(posX-1, 0), max(posX+2, self.__width-1)):
+				for j in range(min(posY-1, 0), max(posY+2, self.__height)):
+					if self.casellas[i][j].getnMinasProp()==0 and self.casellas[i][j].getDestapat()== False and self.casellas[i][j].getBandera() == False and self.casellas[i][j].getInterrogant() == False:
+						self.__destaparCasella(i, j)
+			#SI ESTA DESTAPAT, NUM MINAS NO ES 0 I NO TE BANDERA NI INTERROGANT
+					elif self.casellas[i][j].getDestapat() == False and self.casellas[i][j].getBandera() == False and self.casellas[i][j].getInterrogant() == False:
+						self.casellas[i][j].setDestapat(True)"""
+		return GAMEPLAY
+
+
+	def __demanarCoordenadaX(self):
+		x = int(raw_input('Coordenada X: '))
+		if x < 0 or x>=self.__width:
+			print 'Coordenada Incorrecte'
 			x = self.__demanarCoordenadaX()
+		return x
+	def __demanarCoordenadaY(self):
+		y = int(raw_input('Coordenada Y: '))
+		if y < 0 or y>self.__height:
+			print 'Coordenada Incorrecte'
 			y = self.__demanarCoordenadaY()
-			self.casellas[x-1][y-1].setInterrogant(True)
-			print "La CASELLA " + str(x) + str(y) + "te interrogant"
-		def __demanarBandera(self):
-			x = self.__demanarCoordenadaX()
-			y = self.__demanarCoordenadaY()
-			if self.casellas[x-1][y-1].getnMinasProp() == MINA and casella[x-1][y-1].getBandera() == False:
-				self.casellas[x-1][y-1].setBandera(True)
-				minasRestants-=1
-		#def __moviment():
+		return y
 
-
-
-		def __demanarCoordenadaX(self):
-			x = int(raw_input('Coordenada X: '))
-			if x < 0 or x>=width:
-				print 'Coordenada Incorrecte'
-				x = self.__demanarCoordenadaX()
-			return x
-		def __demanarCoordenadaY(self):
-			y = int(raw_input('Coordenada Y: '))
-			if y < 0 or y>height:
-				print 'Coordenada Incorrecte'
-				y = self.__demanarCoordenadaY()
-			return y
+			
